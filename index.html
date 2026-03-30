@@ -3,278 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vriddhi 2026 | UCMH JNTUH Automation</title>
+    <title>Vriddhi 2026 | UCMH JNTUH</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://unpkg.com/docx@8.2.2/build/index.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,600;1,600&family=Inter:wght@400;600;700&family=Great+Vibes&display=swap');
-        body { font-family: 'Inter', sans-serif; background: #f4f7fa; }
-        .cert-font-title { font-family: 'Crimson Text', serif; }
-        .cert-font-name { font-family: 'Great Vibes', cursive; }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@600&family=Inter:wght@400;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .loader { border-top-color: #4f46e5; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="p-2 md:p-8">
+<body class="p-4 md:p-10">
 
-    <div class="max-w-6xl mx-auto">
-        <header class="mb-8 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-                <h1 class="text-2xl md:text-3xl font-bold text-slate-900">Vriddhi 2026 Automation</h1>
-                <p class="text-indigo-600 font-semibold text-sm">UCMH JNTUH Certificate & Distribution System</p>
-            </div>
-            <div class="flex gap-2">
-                <div class="text-right hidden md:block">
-                    <p class="text-xs text-slate-500 uppercase font-bold">System Status</p>
-                    <p class="text-green-500 text-sm font-bold flex items-center justify-end">● Operational</p>
-                </div>
-            </div>
+    <div class="max-w-5xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl font-extrabold text-slate-900">Vriddhi 2026 Certificate Engine</h1>
+            <p class="text-indigo-600 font-medium">University College of Management Hyderabad (JNTUH)</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            <aside class="lg:col-span-4 space-y-6">
-                <div class="glass p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">📁 Data Input</h2>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Student Data (Excel)</label>
-                            <input type="file" id="excelFile" accept=".xlsx" class="w-full text-sm border p-2 rounded-lg bg-slate-50">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Template Background</label>
-                            <input type="file" id="bgFile" accept="image/*" class="w-full text-sm border p-2 rounded-lg bg-slate-50">
-                        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 col-span-1">
+                <h2 class="font-bold mb-4 flex items-center gap-2">📄 Step 1: Uploads</h2>
+                <div class="space-y-4 text-sm">
+                    <div>
+                        <label class="block text-slate-500 font-bold mb-1 uppercase text-[10px]">Student Data (Excel)</label>
+                        <input type="file" id="excelInput" accept=".xlsx" class="w-full border p-2 rounded-lg bg-slate-50">
+                    </div>
+                    <div>
+                        <label class="block text-slate-500 font-bold mb-1 uppercase text-[10px]">Background Template</label>
+                        <input type="file" id="bgInput" accept="image/*" class="w-full border p-2 rounded-lg bg-slate-50">
+                    </div>
+                    <div>
+                        <label class="block text-slate-500 font-bold mb-1 uppercase text-[10px]">Principal Signature</label>
+                        <input type="file" id="sigP" accept="image/*" class="w-full border p-2 rounded-lg bg-slate-50">
                     </div>
                 </div>
-
-                <div class="glass p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">✍️ Authentication</h2>
-                    <div class="space-y-4">
-                        <input type="file" id="sigIncharge" accept="image/*" class="w-full text-xs border p-2 rounded-lg" placeholder="Incharge Sig">
-                        <input type="file" id="sigPrincipal" accept="image/*" class="w-full text-xs border p-2 rounded-lg" placeholder="Principal Sig">
-                        <hr>
-                        <label class="block text-xs font-bold text-slate-500">EmailJS Public Key (Optional)</label>
-                        <input type="text" id="emailKey" class="w-full text-sm border p-2 rounded-lg" placeholder="Your Public Key">
-                    </div>
-                </div>
-
-                <button onclick="processFiles()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg transition transform active:scale-95">
-                    Generate All Certificates
+                <button onclick="loadData()" class="w-full mt-6 bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition">
+                    Process & Preview
                 </button>
-            </aside>
+            </div>
 
-            <main class="lg:col-span-8">
-                <div class="glass rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="p-4 bg-white border-b flex justify-between items-center">
-                        <h3 class="font-bold text-slate-800">Processing Queue</h3>
-                        <div id="stats" class="text-xs font-bold text-slate-500 space-x-4">
-                            <span>Total: <b id="statTotal">0</b></span>
-                            <span>Mailed: <b id="statMailed" class="text-green-600">0</b></span>
-                        </div>
-                    </div>
-                    
-                    <div class="overflow-x-auto max-h-[600px]">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 sticky top-0">
-                                <tr>
-                                    <th class="p-4 font-bold text-slate-500 border-b">ID / Student</th>
-                                    <th class="p-4 font-bold text-slate-500 border-b text-center">Email Status</th>
-                                    <th class="p-4 font-bold text-slate-500 border-b text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="queueTable">
-                                </tbody>
-                        </table>
-                        <div id="emptyState" class="p-20 text-center text-slate-400">
-                            Upload Excel file to begin automation
-                        </div>
-                    </div>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 col-span-1 md:col-span-2 overflow-hidden flex flex-col">
+                <div class="p-4 bg-slate-50 border-b flex justify-between items-center">
+                    <span class="font-bold text-slate-700">Records Queue</span>
+                    <span id="count" class="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full font-bold">0 found</span>
                 </div>
+                <div class="overflow-y-auto max-h-[400px]" id="tableWrap">
+                    <table class="w-full text-left text-sm">
+                        <tbody id="studentList" class="divide-y divide-slate-100">
+                            </tbody>
+                    </table>
+                    <div id="empty" class="p-20 text-center text-slate-400">No data loaded.</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                <div id="bulkActions" class="mt-6 flex flex-wrap gap-4 hidden">
-                    <button onclick="sendAllEmails()" class="flex-1 bg-green-600 text-white font-bold py-3 rounded-xl hover:bg-green-700">Send All Emails</button>
-                    <button onclick="downloadAllZip()" class="flex-1 bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-slate-900">Download All ZIP</button>
-                </div>
-            </main>
+    <div id="loading" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-2xl text-center shadow-2xl">
+            <div class="loader ease-linear rounded-full border-4 border-t-4 border-slate-200 h-12 w-12 mb-4 mx-auto"></div>
+            <p class="font-bold text-slate-800">Generating PDF...</p>
+            <p class="text-xs text-slate-500">Please do not close this tab.</p>
         </div>
     </div>
 
     <script>
         let students = [];
-        let assets = { bg: null, sigI: null, sigP: null };
+        let config = { bg: null, sig: null };
 
-        const toBase64 = file => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
-        });
+        async function fileToBase64(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.readAsDataURL(file);
+            });
+        }
 
-        async function processFiles() {
-            const excel = document.getElementById('excelFile').files[0];
-            const bg = document.getElementById('bgFile').files[0];
-            const sigI = document.getElementById('sigIncharge').files[0];
-            const sigP = document.getElementById('sigPrincipal').files[0];
+        async function loadData() {
+            const eFile = document.getElementById('excelInput').files[0];
+            const bFile = document.getElementById('bgInput').files[0];
+            const sFile = document.getElementById('sigP').files[0];
 
-            if (!excel || !bg) return alert("Required: Excel Data + Background Template");
+            if (!eFile || !bFile) return alert("Please select Excel and Background Image.");
 
-            assets.bg = await toBase64(bg);
-            if (sigI) assets.sigI = await toBase64(sigI);
-            if (sigP) assets.sigP = await toBase64(sigP);
+            config.bg = await fileToBase64(bFile);
+            if (sFile) config.sig = await fileToBase64(sFile);
 
             const reader = new FileReader();
             reader.onload = (e) => {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
                 const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                const json = XLSX.utils.sheet_to_json(sheet);
+                const rows = XLSX.utils.sheet_to_json(sheet);
                 
-                students = json.map((s, index) => ({
-                    id: `V2026-P-${String(index + 1).padStart(5, '0')}`,
-                    name: s['Student Name'] || s['Name'],
-                    email: s['Email ID'] || s['Email'],
-                    status: 'Pending'
+                students = rows.map(r => ({
+                    name: r['Student Name'] || r['Name'] || "Unknown Participant",
+                    email: r['Email ID'] || r['Email'] || ""
                 }));
 
-                renderQueue();
+                renderTable();
             };
-            reader.readAsArrayBuffer(excel);
+            reader.readAsArrayBuffer(eFile);
         }
 
-        function renderQueue() {
-            const tbody = document.getElementById('queueTable');
-            const empty = document.getElementById('emptyState');
-            const bulk = document.getElementById('bulkActions');
-            
-            tbody.innerHTML = '';
-            empty.classList.add('hidden');
-            bulk.classList.remove('hidden');
-            document.getElementById('statTotal').innerText = students.length;
+        function renderTable() {
+            const list = document.getElementById('studentList');
+            document.getElementById('empty').classList.add('hidden');
+            document.getElementById('count').innerText = `${students.length} Records`;
+            list.innerHTML = "";
 
-            students.forEach((s, idx) => {
-                const row = document.createElement('tr');
-                row.className = "hover:bg-indigo-50/50 border-b border-slate-100 transition";
-                row.innerHTML = `
-                    <td class="p-4">
-                        <div class="font-bold text-slate-800">${s.name}</div>
-                        <div class="text-[10px] font-mono text-indigo-500">${s.id}</div>
-                    </td>
-                    <td class="p-4 text-center">
-                        <span id="status-${idx}" class="px-2 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500">${s.status}</span>
-                    </td>
-                    <td class="p-4 text-right space-x-2">
-                        <button onclick="genPDF(${idx}, true)" class="text-indigo-600 font-bold hover:underline">PDF</button>
-                        <button onclick="genWord(${idx})" class="text-slate-600 font-bold hover:underline">Word</button>
-                    </td>
+            students.forEach((s, i) => {
+                list.innerHTML += `
+                    <tr class="hover:bg-indigo-50 transition">
+                        <td class="p-4 font-semibold text-slate-800">${s.name}</td>
+                        <td class="p-4 text-right">
+                            <button onclick="downloadOne(${i})" class="bg-slate-800 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-black transition">
+                                Download PDF
+                            </button>
+                        </td>
+                    </tr>
                 `;
-                tbody.appendChild(row);
             });
         }
 
-        async function genPDF(index, download = false) {
-            const { jsPDF } = window.jspdf;
-            const s = students[index];
-            const doc = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1000, 750] });
+        async function downloadOne(index) {
+            const loader = document.getElementById('loading');
+            loader.classList.remove('hidden');
 
-            // Background
-            doc.addImage(assets.bg, 'JPEG', 0, 0, 1000, 750);
+            try {
+                const { jsPDF } = window.jspdf;
+                const student = students[index];
+                
+                // Set orientation to Landscape A4 (approx 842x595 points)
+                const doc = new jsPDF({
+                    orientation: 'l',
+                    unit: 'px',
+                    format: [842, 595]
+                });
 
-            // Title
-            doc.setFont("times", "bold");
-            doc.setFontSize(40);
-            doc.text("Certificate of Participation", 500, 80, { align: 'center' });
+                const w = doc.internal.pageSize.getWidth();
+                const h = doc.internal.pageSize.getHeight();
 
-            // Uni Info
-            doc.setFontSize(20);
-            doc.text("Jawaharlal Nehru Technological University Hyderabad", 500, 110, { align: 'center' });
-            doc.text("University College of Management Hyderabad", 500, 135, { align: 'center' });
+                // 1. Background
+                doc.addImage(config.bg, 'JPEG', 0, 0, w, h);
 
-            // Name
-            doc.setFont("courier", "bolditalic");
-            doc.setFontSize(55);
-            doc.setTextColor(43, 54, 116); // Professional Navy
-            doc.text(s.name, 500, 240, { align: 'center' });
+                // 2. Main Title (Hardcoded as per requirement)
+                doc.setFont("times", "bold");
+                doc.setFontSize(32);
+                doc.setTextColor(20, 30, 70); 
+                doc.text("Certificate of Participation", w/2, 80, { align: 'center' });
 
-            // Body
-            doc.setTextColor(0, 0, 0);
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(16);
-            const body = `This is to certify that ${s.name} has actively and successfully participated in the prestigious event ‘Vriddhi 2026’, organized by the University College of Management Hyderabad, JNTUH, held on 01 April 2026. The participant has shown commendable enthusiasm, dedication, and commitment throughout the program.`;
-            const splitBody = doc.splitTextToSize(body, 700);
-            doc.text(splitBody, 500, 310, { align: 'center', lineHeightFactor: 1.5 });
+                // 3. Name (Stylish)
+                doc.setFont("helvetica", "bolditalic");
+                doc.setFontSize(45);
+                doc.setTextColor(43, 54, 116);
+                doc.text(student.name, w/2, 260, { align: 'center' });
 
-            // Footer / ID
-            doc.setFontSize(12);
-            doc.setFont("courier", "bold");
-            doc.text(`Certificate ID: ${s.id}`, 500, 680, { align: 'center' });
+                // 4. Body Text
+                doc.setFont("times", "normal");
+                doc.setFontSize(16);
+                doc.setTextColor(0, 0, 0);
+                const bodyText = `This is to certify that ${student.name} has actively and successfully participated in 'Vriddhi 2026', organized by University College of Management Hyderabad, JNTUH on April 01, 2026. We appreciate their dedication and innovation.`;
+                const splitText = doc.splitTextToSize(bodyText, 600);
+                doc.text(splitText, w/2, 330, { align: 'center', lineHeightFactor: 1.5 });
 
-            // Signatures
-            if (assets.sigI) doc.addImage(assets.sigI, 'PNG', 150, 550, 150, 60);
-            if (assets.sigP) doc.addImage(assets.sigP, 'PNG', 700, 550, 150, 60);
-            
-            doc.setFont("helvetica", "bold");
-            doc.text("Event Coordinator", 225, 620, { align: 'center' });
-            doc.text("Principal", 775, 620, { align: 'center' });
-
-            if (download) doc.save(`${s.id}_${s.name}.pdf`);
-            return doc.output('datauristring');
-        }
-
-        async function genWord(index) {
-            const s = students[index];
-            const { Document, Packer, Paragraph, TextRun, AlignmentType } = window.docx;
-
-            const doc = new Document({
-                sections: [{
-                    properties: { page: { size: { orientation: "landscape" } } },
-                    children: [
-                        new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Vriddhi 2026 Participation Certificate", bold: true, size: 40 })] }),
-                        new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `Student: ${s.name}`, break: 2, size: 32, bold: true })] }),
-                        new Paragraph({ children: [new TextRun({ text: `Certificate ID: ${s.id}`, break: 4 })] })
-                    ],
-                }],
-            });
-
-            Packer.toBlob(doc).then(blob => saveAs(blob, `${s.id}_${s.name}.docx`));
-        }
-
-        async function sendAllEmails() {
-            const key = document.getElementById('emailKey').value;
-            if (!key) return alert("Please enter your EmailJS Public Key in the sidebar.");
-            
-            emailjs.init(key);
-            let count = 0;
-
-            for (let i = 0; i < students.length; i++) {
-                const s = students[i];
-                const statusEl = document.getElementById(`status-${i}`);
-                statusEl.innerText = "Sending...";
-                statusEl.className = "px-2 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-600";
-
-                try {
-                    // Note: EmailJS free tier usually sends template data. 
-                    // Attachment handling in browser-based EmailJS is restricted.
-                    // This triggers the formal template notification.
-                    await emailjs.send("default_service", "YOUR_TEMPLATE_ID", {
-                        to_name: s.name,
-                        to_email: s.email,
-                        cert_id: s.id,
-                    });
-
-                    s.status = "Sent";
-                    statusEl.innerText = "Sent";
-                    statusEl.className = "px-2 py-1 rounded-full text-[10px] font-bold bg-green-100 text-green-600";
-                    count++;
-                    document.getElementById('statMailed').innerText = count;
-                } catch (err) {
-                    statusEl.innerText = "Error";
-                    statusEl.className = "px-2 py-1 rounded-full text-[10px] font-bold bg-red-100 text-red-600";
+                // 5. Signature
+                if (config.sig) {
+                    doc.addImage(config.sig, 'PNG', w - 200, h - 120, 120, 50);
+                    doc.setFontSize(12);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Principal", w - 140, h - 60, { align: 'center' });
                 }
+
+                // 6. ID
+                const certId = `V2026-P-${String(index+1).padStart(4, '0')}`;
+                doc.setFontSize(10);
+                doc.text(`ID: ${certId}`, w/2, h - 30, { align: 'center' });
+
+                doc.save(`Vriddhi_Certificate_${student.name.replace(/\s+/g, '_')}.pdf`);
+
+            } catch (err) {
+                console.error(err);
+                alert("PDF Generation Failed. Ensure your background image is a valid JPG/PNG.");
+            } finally {
+                loader.classList.add('hidden');
             }
         }
     </script>
