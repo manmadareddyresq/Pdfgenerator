@@ -3,85 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vriddhi 2026 Certificate Generator</title>
+    <title>Vriddhi 2026 | UCMH JNTUH Automation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://unpkg.com/docx@8.2.2/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
     <style>
-        .gradient-bg { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); }
-        .card { backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.9); }
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,600;1,600&family=Inter:wght@400;600;700&family=Great+Vibes&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #f4f7fa; }
+        .cert-font-title { font-family: 'Crimson Text', serif; }
+        .cert-font-name { font-family: 'Great Vibes', cursive; }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
     </style>
 </head>
-<body class="gradient-bg min-h-screen font-sans text-slate-800">
+<body class="p-2 md:p-8">
 
-    <div class="max-w-4xl mx-auto px-4 py-8">
-        <header class="text-center mb-10">
-            <h1 class="text-3xl md:text-4xl font-bold text-indigo-900">Vriddhi 2026 Certificate Generator</h1>
-            <p class="text-slate-600 mt-2 font-medium">UCMH JNTUH Official Automation Tool</p>
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-8 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-900">Vriddhi 2026 Automation</h1>
+                <p class="text-indigo-600 font-semibold text-sm">UCMH JNTUH Certificate & Distribution System</p>
+            </div>
+            <div class="flex gap-2">
+                <div class="text-right hidden md:block">
+                    <p class="text-xs text-slate-500 uppercase font-bold">System Status</p>
+                    <p class="text-green-500 text-sm font-bold flex items-center justify-end">● Operational</p>
+                </div>
+            </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="card p-6 rounded-2xl shadow-xl border border-white">
-                <h2 class="text-lg font-bold mb-4 flex items-center">📂 1. Data & Template</h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Excel File (.xlsx)</label>
-                        <input type="file" id="excelInput" accept=".xlsx" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Certificate Background (Image)</label>
-                        <input type="file" id="bgInput" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                    </div>
-                </div>
-            </div>
-
-            <div class="card p-6 rounded-2xl shadow-xl border border-white">
-                <h2 class="text-lg font-bold mb-4 flex items-center">✍️ 2. Signatures</h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Principal Signature</label>
-                        <input type="file" id="sigPrincipal" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Incharge Signature</label>
-                        <input type="file" id="sigIncharge" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <aside class="lg:col-span-4 space-y-6">
+                <div class="glass p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">📁 Data Input</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Student Data (Excel)</label>
+                            <input type="file" id="excelFile" accept=".xlsx" class="w-full text-sm border p-2 rounded-lg bg-slate-50">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Template Background</label>
+                            <input type="file" id="bgFile" accept="image/*" class="w-full text-sm border p-2 rounded-lg bg-slate-50">
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <button onclick="processData()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform hover:scale-[1.01] active:scale-95 mb-10">
-            Generate Certificates
-        </button>
+                <div class="glass p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-bold mb-4 flex items-center gap-2">✍️ Authentication</h2>
+                    <div class="space-y-4">
+                        <input type="file" id="sigIncharge" accept="image/*" class="w-full text-xs border p-2 rounded-lg" placeholder="Incharge Sig">
+                        <input type="file" id="sigPrincipal" accept="image/*" class="w-full text-xs border p-2 rounded-lg" placeholder="Principal Sig">
+                        <hr>
+                        <label class="block text-xs font-bold text-slate-500">EmailJS Public Key (Optional)</label>
+                        <input type="text" id="emailKey" class="w-full text-sm border p-2 rounded-lg" placeholder="Your Public Key">
+                    </div>
+                </div>
 
-        <div id="resultsContainer" class="hidden card rounded-2xl shadow-xl border border-white overflow-hidden">
-            <div class="p-4 bg-white border-b flex justify-between items-center">
-                <h3 class="font-bold text-slate-700">Student Records</h3>
-                <span id="recordCount" class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold">0 Records</span>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead class="bg-slate-50">
-                        <tr>
-                            <th class="p-4 text-xs font-bold uppercase text-slate-500">Name</th>
-                            <th class="p-4 text-xs font-bold uppercase text-slate-500">Event</th>
-                            <th class="p-4 text-right text-xs font-bold uppercase text-slate-500">Downloads</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentTableBody" class="divide-y divide-slate-100">
-                        </tbody>
-                </table>
-            </div>
+                <button onclick="processFiles()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg transition transform active:scale-95">
+                    Generate All Certificates
+                </button>
+            </aside>
+
+            <main class="lg:col-span-8">
+                <div class="glass rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-4 bg-white border-b flex justify-between items-center">
+                        <h3 class="font-bold text-slate-800">Processing Queue</h3>
+                        <div id="stats" class="text-xs font-bold text-slate-500 space-x-4">
+                            <span>Total: <b id="statTotal">0</b></span>
+                            <span>Mailed: <b id="statMailed" class="text-green-600">0</b></span>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto max-h-[600px]">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 sticky top-0">
+                                <tr>
+                                    <th class="p-4 font-bold text-slate-500 border-b">ID / Student</th>
+                                    <th class="p-4 font-bold text-slate-500 border-b text-center">Email Status</th>
+                                    <th class="p-4 font-bold text-slate-500 border-b text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="queueTable">
+                                </tbody>
+                        </table>
+                        <div id="emptyState" class="p-20 text-center text-slate-400">
+                            Upload Excel file to begin automation
+                        </div>
+                    </div>
+                </div>
+
+                <div id="bulkActions" class="mt-6 flex flex-wrap gap-4 hidden">
+                    <button onclick="sendAllEmails()" class="flex-1 bg-green-600 text-white font-bold py-3 rounded-xl hover:bg-green-700">Send All Emails</button>
+                    <button onclick="downloadAllZip()" class="flex-1 bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-slate-900">Download All ZIP</button>
+                </div>
+            </main>
         </div>
     </div>
 
     <script>
-        let studentData = [];
-        let assets = { bg: null, sigP: null, sigI: null };
+        let students = [];
+        let assets = { bg: null, sigI: null, sigP: null };
 
-        // File to Base64 helper
         const toBase64 = file => new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -89,94 +115,167 @@
             reader.onerror = error => reject(error);
         });
 
-        async function processData() {
-            const excelFile = document.getElementById('excelInput').files[0];
-            const bgFile = document.getElementById('bgInput').files[0];
-            const pFile = document.getElementById('sigPrincipal').files[0];
-            const iFile = document.getElementById('sigIncharge').files[0];
+        async function processFiles() {
+            const excel = document.getElementById('excelFile').files[0];
+            const bg = document.getElementById('bgFile').files[0];
+            const sigI = document.getElementById('sigIncharge').files[0];
+            const sigP = document.getElementById('sigPrincipal').files[0];
 
-            if (!excelFile || !bgFile) return alert("Please upload Excel and Background Image");
+            if (!excel || !bg) return alert("Required: Excel Data + Background Template");
 
-            assets.bg = await toBase64(bgFile);
-            if(pFile) assets.sigP = await toBase64(pFile);
-            if(iFile) assets.sigI = await toBase64(iFile);
+            assets.bg = await toBase64(bg);
+            if (sigI) assets.sigI = await toBase64(sigI);
+            if (sigP) assets.sigP = await toBase64(sigP);
 
             const reader = new FileReader();
             reader.onload = (e) => {
-                const workbook = XLSX.read(e.target.result, { type: 'binary' });
-                studentData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                renderTable();
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(sheet);
+                
+                students = json.map((s, index) => ({
+                    id: `V2026-P-${String(index + 1).padStart(5, '0')}`,
+                    name: s['Student Name'] || s['Name'],
+                    email: s['Email ID'] || s['Email'],
+                    status: 'Pending'
+                }));
+
+                renderQueue();
             };
-            reader.readAsBinaryString(excelFile);
+            reader.readAsArrayBuffer(excel);
         }
 
-        function renderTable() {
-            const tbody = document.getElementById('studentTableBody');
-            const container = document.getElementById('resultsContainer');
-            document.getElementById('recordCount').innerText = `${studentData.length} Records`;
+        function renderQueue() {
+            const tbody = document.getElementById('queueTable');
+            const empty = document.getElementById('emptyState');
+            const bulk = document.getElementById('bulkActions');
+            
             tbody.innerHTML = '';
-            container.classList.remove('hidden');
+            empty.classList.add('hidden');
+            bulk.classList.remove('hidden');
+            document.getElementById('statTotal').innerText = students.length;
 
-            studentData.forEach((student, index) => {
-                const name = student.Name || student["Student Name"] || "N/A";
-                const event = student.Event || "Vriddhi 2026";
-                
-                const row = `
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="p-4 font-semibold text-slate-700">${name}</td>
-                        <td class="p-4 text-slate-500 text-sm">${event}</td>
-                        <td class="p-4 text-right space-x-2">
-                            <button onclick="downloadPDF('${name}', '${event}')" class="text-xs bg-red-50 text-red-600 px-3 py-1 rounded-md font-bold hover:bg-red-100">PDF</button>
-                            <button onclick="downloadWord('${name}', '${event}')" class="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-md font-bold hover:bg-blue-100">Word</button>
-                        </td>
-                    </tr>
+            students.forEach((s, idx) => {
+                const row = document.createElement('tr');
+                row.className = "hover:bg-indigo-50/50 border-b border-slate-100 transition";
+                row.innerHTML = `
+                    <td class="p-4">
+                        <div class="font-bold text-slate-800">${s.name}</div>
+                        <div class="text-[10px] font-mono text-indigo-500">${s.id}</div>
+                    </td>
+                    <td class="p-4 text-center">
+                        <span id="status-${idx}" class="px-2 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500">${s.status}</span>
+                    </td>
+                    <td class="p-4 text-right space-x-2">
+                        <button onclick="genPDF(${idx}, true)" class="text-indigo-600 font-bold hover:underline">PDF</button>
+                        <button onclick="genWord(${idx})" class="text-slate-600 font-bold hover:underline">Word</button>
+                    </td>
                 `;
-                tbody.innerHTML += row;
+                tbody.appendChild(row);
             });
         }
 
-        async function downloadPDF(name, event) {
+        async function genPDF(index, download = false) {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'landscape', unit: 'px', format: [800, 600] });
-            
-            doc.addImage(assets.bg, 'JPEG', 0, 0, 800, 600);
-            
-            doc.setTextColor(40, 40, 40);
-            doc.setFontSize(42);
-            doc.text(name, 400, 300, { align: 'center' });
-            
-            doc.setFontSize(18);
-            doc.text(event, 400, 360, { align: 'center' });
+            const s = students[index];
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1000, 750] });
 
-            if(assets.sigI) doc.addImage(assets.sigI, 'PNG', 100, 480, 120, 50);
-            if(assets.sigP) doc.addImage(assets.sigP, 'PNG', 580, 480, 120, 50);
+            // Background
+            doc.addImage(assets.bg, 'JPEG', 0, 0, 1000, 750);
 
-            doc.save(`Certificate_${name}.pdf`);
+            // Title
+            doc.setFont("times", "bold");
+            doc.setFontSize(40);
+            doc.text("Certificate of Participation", 500, 80, { align: 'center' });
+
+            // Uni Info
+            doc.setFontSize(20);
+            doc.text("Jawaharlal Nehru Technological University Hyderabad", 500, 110, { align: 'center' });
+            doc.text("University College of Management Hyderabad", 500, 135, { align: 'center' });
+
+            // Name
+            doc.setFont("courier", "bolditalic");
+            doc.setFontSize(55);
+            doc.setTextColor(43, 54, 116); // Professional Navy
+            doc.text(s.name, 500, 240, { align: 'center' });
+
+            // Body
+            doc.setTextColor(0, 0, 0);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(16);
+            const body = `This is to certify that ${s.name} has actively and successfully participated in the prestigious event ‘Vriddhi 2026’, organized by the University College of Management Hyderabad, JNTUH, held on 01 April 2026. The participant has shown commendable enthusiasm, dedication, and commitment throughout the program.`;
+            const splitBody = doc.splitTextToSize(body, 700);
+            doc.text(splitBody, 500, 310, { align: 'center', lineHeightFactor: 1.5 });
+
+            // Footer / ID
+            doc.setFontSize(12);
+            doc.setFont("courier", "bold");
+            doc.text(`Certificate ID: ${s.id}`, 500, 680, { align: 'center' });
+
+            // Signatures
+            if (assets.sigI) doc.addImage(assets.sigI, 'PNG', 150, 550, 150, 60);
+            if (assets.sigP) doc.addImage(assets.sigP, 'PNG', 700, 550, 150, 60);
+            
+            doc.setFont("helvetica", "bold");
+            doc.text("Event Coordinator", 225, 620, { align: 'center' });
+            doc.text("Principal", 775, 620, { align: 'center' });
+
+            if (download) doc.save(`${s.id}_${s.name}.pdf`);
+            return doc.output('datauristring');
         }
 
-        async function downloadWord(name, event) {
-            const { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType } = window.docx;
-            
+        async function genWord(index) {
+            const s = students[index];
+            const { Document, Packer, Paragraph, TextRun, AlignmentType } = window.docx;
+
             const doc = new Document({
                 sections: [{
                     properties: { page: { size: { orientation: "landscape" } } },
                     children: [
-                        new Paragraph({
-                            alignment: AlignmentType.CENTER,
-                            children: [
-                                new TextRun({ text: "CERTIFICATE OF EXCELLENCE", bold: true, size: 48 }),
-                                new TextRun({ text: `\n\nThis is to certify that`, break: 2, size: 28 }),
-                                new TextRun({ text: `\n${name}`, bold: true, color: "2b3674", size: 64, break: 1 }),
-                                new TextRun({ text: `\nparticipated in ${event}`, size: 28, break: 1 }),
-                            ],
-                        }),
+                        new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Vriddhi 2026 Participation Certificate", bold: true, size: 40 })] }),
+                        new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `Student: ${s.name}`, break: 2, size: 32, bold: true })] }),
+                        new Paragraph({ children: [new TextRun({ text: `Certificate ID: ${s.id}`, break: 4 })] })
                     ],
                 }],
             });
 
-            Packer.toBlob(doc).then(blob => {
-                saveAs(blob, `Certificate_${name}.docx`);
-            });
+            Packer.toBlob(doc).then(blob => saveAs(blob, `${s.id}_${s.name}.docx`));
+        }
+
+        async function sendAllEmails() {
+            const key = document.getElementById('emailKey').value;
+            if (!key) return alert("Please enter your EmailJS Public Key in the sidebar.");
+            
+            emailjs.init(key);
+            let count = 0;
+
+            for (let i = 0; i < students.length; i++) {
+                const s = students[i];
+                const statusEl = document.getElementById(`status-${i}`);
+                statusEl.innerText = "Sending...";
+                statusEl.className = "px-2 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-600";
+
+                try {
+                    // Note: EmailJS free tier usually sends template data. 
+                    // Attachment handling in browser-based EmailJS is restricted.
+                    // This triggers the formal template notification.
+                    await emailjs.send("default_service", "YOUR_TEMPLATE_ID", {
+                        to_name: s.name,
+                        to_email: s.email,
+                        cert_id: s.id,
+                    });
+
+                    s.status = "Sent";
+                    statusEl.innerText = "Sent";
+                    statusEl.className = "px-2 py-1 rounded-full text-[10px] font-bold bg-green-100 text-green-600";
+                    count++;
+                    document.getElementById('statMailed').innerText = count;
+                } catch (err) {
+                    statusEl.innerText = "Error";
+                    statusEl.className = "px-2 py-1 rounded-full text-[10px] font-bold bg-red-100 text-red-600";
+                }
+            }
         }
     </script>
 </body>
