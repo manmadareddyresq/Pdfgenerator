@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vriddhi 2026 Certificate Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/docx@8.2.2/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); }
+        .card { backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.9); }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen font-sans text-slate-800">
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-indigo-900">Vriddhi 2026 Certificate Generator</h1>
+            <p class="text-slate-600 mt-2 font-medium">UCMH JNTUH Official Automation Tool</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="card p-6 rounded-2xl shadow-xl border border-white">
+                <h2 class="text-lg font-bold mb-4 flex items-center">📂 1. Data & Template</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Excel File (.xlsx)</label>
+                        <input type="file" id="excelInput" accept=".xlsx" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Certificate Background (Image)</label>
+                        <input type="file" id="bgInput" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-6 rounded-2xl shadow-xl border border-white">
+                <h2 class="text-lg font-bold mb-4 flex items-center">✍️ 2. Signatures</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Principal Signature</label>
+                        <input type="file" id="sigPrincipal" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Incharge Signature</label>
+                        <input type="file" id="sigIncharge" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="processData()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform hover:scale-[1.01] active:scale-95 mb-10">
+            Generate Certificates
+        </button>
+
+        <div id="resultsContainer" class="hidden card rounded-2xl shadow-xl border border-white overflow-hidden">
+            <div class="p-4 bg-white border-b flex justify-between items-center">
+                <h3 class="font-bold text-slate-700">Student Records</h3>
+                <span id="recordCount" class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold">0 Records</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="p-4 text-xs font-bold uppercase text-slate-500">Name</th>
+                            <th class="p-4 text-xs font-bold uppercase text-slate-500">Event</th>
+                            <th class="p-4 text-right text-xs font-bold uppercase text-slate-500">Downloads</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody" class="divide-y divide-slate-100">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let studentData = [];
+        let assets = { bg: null, sigP: null, sigI: null };
+
+        // File to Base64 helper
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+
+        async function processData() {
+            const excelFile = document.getElementById('excelInput').files[0];
+            const bgFile = document.getElementById('bgInput').files[0];
+            const pFile = document.getElementById('sigPrincipal').files[0];
+            const iFile = document.getElementById('sigIncharge').files[0];
+
+            if (!excelFile || !bgFile) return alert("Please upload Excel and Background Image");
+
+            assets.bg = await toBase64(bgFile);
+            if(pFile) assets.sigP = await toBase64(pFile);
+            if(iFile) assets.sigI = await toBase64(iFile);
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const workbook = XLSX.read(e.target.result, { type: 'binary' });
+                studentData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+                renderTable();
+            };
+            reader.readAsBinaryString(excelFile);
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('studentTableBody');
+            const container = document.getElementById('resultsContainer');
+            document.getElementById('recordCount').innerText = `${studentData.length} Records`;
+            tbody.innerHTML = '';
+            container.classList.remove('hidden');
+
+            studentData.forEach((student, index) => {
+                const name = student.Name || student["Student Name"] || "N/A";
+                const event = student.Event || "Vriddhi 2026";
+                
+                const row = `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-4 font-semibold text-slate-700">${name}</td>
+                        <td class="p-4 text-slate-500 text-sm">${event}</td>
+                        <td class="p-4 text-right space-x-2">
+                            <button onclick="downloadPDF('${name}', '${event}')" class="text-xs bg-red-50 text-red-600 px-3 py-1 rounded-md font-bold hover:bg-red-100">PDF</button>
+                            <button onclick="downloadWord('${name}', '${event}')" class="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-md font-bold hover:bg-blue-100">Word</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        async function downloadPDF(name, event) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'px', format: [800, 600] });
+            
+            doc.addImage(assets.bg, 'JPEG', 0, 0, 800, 600);
+            
+            doc.setTextColor(40, 40, 40);
+            doc.setFontSize(42);
+            doc.text(name, 400, 300, { align: 'center' });
+            
+            doc.setFontSize(18);
+            doc.text(event, 400, 360, { align: 'center' });
+
+            if(assets.sigI) doc.addImage(assets.sigI, 'PNG', 100, 480, 120, 50);
+            if(assets.sigP) doc.addImage(assets.sigP, 'PNG', 580, 480, 120, 50);
+
+            doc.save(`Certificate_${name}.pdf`);
+        }
+
+        async function downloadWord(name, event) {
+            const { Document, Packer, Paragraph, TextRun, ImageRun, AlignmentType } = window.docx;
+            
+            const doc = new Document({
+                sections: [{
+                    properties: { page: { size: { orientation: "landscape" } } },
+                    children: [
+                        new Paragraph({
+                            alignment: AlignmentType.CENTER,
+                            children: [
+                                new TextRun({ text: "CERTIFICATE OF EXCELLENCE", bold: true, size: 48 }),
+                                new TextRun({ text: `\n\nThis is to certify that`, break: 2, size: 28 }),
+                                new TextRun({ text: `\n${name}`, bold: true, color: "2b3674", size: 64, break: 1 }),
+                                new TextRun({ text: `\nparticipated in ${event}`, size: 28, break: 1 }),
+                            ],
+                        }),
+                    ],
+                }],
+            });
+
+            Packer.toBlob(doc).then(blob => {
+                saveAs(blob, `Certificate_${name}.docx`);
+            });
+        }
+    </script>
+</body>
+</html>
